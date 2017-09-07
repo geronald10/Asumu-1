@@ -12,6 +12,37 @@ class Services extends REST_Controller
         $this->load->helper('url_helper');
 	}
 
+    public function login_post()
+    {
+				$this->load->model('User_model');
+        $username = $this->post('username');
+        $password = $this->post('password');
+
+        if($username != NULL && $password != NULL)
+        {
+            $user = $this->User_model->login($username, $password);
+
+            if($user)
+            {
+                $this->response([[
+                    'status' => TRUE,
+                    'message' => 'Login succeeded'
+                ]], REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+            }
+            else
+            {
+                $this->response([[
+                    'status' => FALSE,
+                    'message' => 'Wrong username or password'
+                ]]);
+            }
+        }
+        else
+        {
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        }
+			}
+
 	// public function outlet_get()
 	// {
 	// 	$id = $this->get('id');
@@ -35,7 +66,7 @@ class Services extends REST_Controller
  //                // $this->output->set_output(json_encode($outlets, 16));
  //                // return $this->output;
 	// 			$this->response($outlets, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-	// 		} 
+	// 		}
 	// 		else
  //            {
  //                $this->response([[
@@ -44,7 +75,7 @@ class Services extends REST_Controller
  //                ]]);
  //            }
 	// 	}
-		
+
 	// 	$id = (int) $id;
 
  //        // Validate the id.
@@ -60,7 +91,7 @@ class Services extends REST_Controller
  //        	if($outlet)
 	// 		{
 	// 			$this->response($outlet, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-	// 		} 
+	// 		}
 	// 		else
  //            {
  //                $this->response([[
@@ -69,7 +100,7 @@ class Services extends REST_Controller
  //                ]], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
  //            }
  //        }
-        
+
 	// }
 
  //    public function SN_post()
@@ -106,37 +137,9 @@ class Services extends REST_Controller
  //        {
  //            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
  //        }
-        
+
  //    }
 
- //    public function login_post()
- //    {
- //        $username = $this->post('username');
- //        $password = $this->post('password');
-
- //        if($username != NULL && $password != NULL)
- //        {
- //            $user = $this->Services_model->getUser($username, $password);
-
- //            if($user)
- //            {
- //                $this->response([[
- //                    'status' => TRUE,
- //                    'message' => 'Login succeeded'
- //                ]], REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
- //            }
- //            else
- //            {
- //                $this->response([[
- //                    'status' => FALSE,
- //                    'message' => 'Wrong username or password'
- //                ]]);
- //            }
- //        }
- //        else
- //        {
- //            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
- //        }
  //    }
-    
+
 }
