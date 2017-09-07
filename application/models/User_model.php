@@ -12,4 +12,11 @@ class User_model extends CI_Model {
       $this->db->where('password',$password);
       return $this->db->get($this->table)->result();
     }
+
+
+    public function updatePenghasilan($username, $penghasilan) {
+      $args = array('username'=>$username, 'penghasilan'=>$penghasilan);
+      $this->db->where('username', $username);
+      return $this->db->update($this->table, $args);
+    }
 }

@@ -43,6 +43,14 @@ class Services extends REST_Controller
         }
 			}
 
+        public function penghasilan_get(){
+        $this->load->model('User_model');
+        $username = $this->post('username');
+        $penghasilan = $this->post('penghasilan');
+        $responses = $this->User_model->updatePenghasilan($username, $penghasilan);   
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);    
+        }
+
 	// public function outlet_get()
 	// {
 	// 	$id = $this->get('id');
