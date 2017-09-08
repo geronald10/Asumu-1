@@ -17,4 +17,9 @@ class HistoryTarget_model extends CI_Model {
       return $this->db->delete($this->table);
     }
 
+    public function getHistoryTarget($username) {
+    	$this->db->where('username', $username);
+    	return $this->db->get($this->table)->result();
+	}
+
 }

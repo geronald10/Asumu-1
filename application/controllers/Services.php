@@ -82,6 +82,13 @@ class Services extends REST_Controller
 			$this->response($responses, REST_Controller::HTTP_OK);
 			}
 
+			public function historyTarget_get() {
+				$this->load->model('HistoryTarget_model');
+				$username = $this->get('username');
+				$response = $this->HistoryTarget_model->getHistoryTarget($username);
+				$this->response($response, REST_Controller::HTTP_OK);
+			}
+
 	    public function newPengeluaran_post() {
 	        $this->load->model('Pengeluaran_model');
 	        $username = $this->post('username');
