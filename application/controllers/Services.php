@@ -72,14 +72,21 @@ class Services extends REST_Controller
 	        $username = $this->post('username');
 	        $penghasilan = $this->post('penghasilan');
 	        $responses = $this->User_model->updatePenghasilan($username, $penghasilan);
-	        $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+	        $this->response(NULL, REST_Controller::HTTP_OK);
 	    }
 
 			public function pengeluaran_get() {
 	    	$this->load->model('Pengeluaran_model');
 	    	$username = $this->get('username');
-			$responses = $this->Pengeluaran_model->getPengeluaranDefault($username);
-			$this->response($responses, REST_Controller::HTTP_OK);
+				if($username != NULL)
+				{
+					$responses = $this->Pengeluaran_model->getPengeluaranDefault($username);
+					$this->response($responses, REST_Controller::HTTP_OK);
+				}
+				else {
+					$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+				}
+
 			}
 
 	    public function newPengeluaran_post() {
