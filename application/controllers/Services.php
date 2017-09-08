@@ -17,8 +17,14 @@ class Services extends REST_Controller
 		if($this->post())
 		{
 			$data = [];
+			$save = 0;
+			$expense = 0;
 			foreach($this->post() as $key => $value) {
 				$data[$key] = $value;
+				if($key != 'username' && $key != 'id_target' && $key != 'date')
+				{
+					$expense += intval($value);
+				}
 			}
 			$inp = file_get_contents(base_url().'json/history.json');
 			$tempArray = json_decode($inp);
@@ -33,7 +39,38 @@ class Services extends REST_Controller
 		else {
 			$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
 		}
+	}
 
+	public function updateHistoryDailyAmount_post()
+	{
+		foreach($this->post() as $key => $value)
+		{
+			if($key != 'username' && $key != 'id_target' && $key != 'date' && $key != 'amount')
+			{
+				$field = $key;
+			}
+		}
+		$inp = file_get_contents(base_url().'json/history.json');
+		$tempArray = json_decode($inp);
+		foreach($tempArray as $temp)
+		{
+			if ($temp->username == $this->post('username') && $temp->id_target == $this->post('id_target') && $temp->date == $this->post('date'))
+			{
+				foreach($temp as $key => $value)
+				{
+					if($key == $field)
+					{
+						$temp->field = $this->post('amount');
+					}
+				}
+			}
+		}
+		$jsonData = json_encode($tempArray);
+		file_put_contents('././json/history.json', $jsonData);
+		$this->response([[
+				'status' => TRUE,
+				'message' => 'Pengeluaran Daily updated'
+		]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
 	}
 
 	public function login_post()
@@ -44,7 +81,7 @@ class Services extends REST_Controller
 
 		if($username != NULL && $password != NULL)
 		{
-			$user = $this->User_model->login($username, $password);
+			$user = $this->User_model->login($username, md5($password));
 
 			if($user)
 			{
