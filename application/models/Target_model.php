@@ -43,4 +43,13 @@ class Target_model extends CI_Model {
       return $this->db->get($this->table)->row();
     }
 
+    public function update_offset_target($id,$offset)
+    {
+      $args = array(
+        'offset' => $offset
+      );
+      $this->db->where('id_target',$id);
+      $this->db->update($this->table, $args);
+    }
+
 }

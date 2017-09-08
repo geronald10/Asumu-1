@@ -17,6 +17,9 @@ class Services extends REST_Controller
 		if($this->post())
 		{
 			$this->load->model('User_model');
+			$this->load->model('Target_model');
+			$normalExpense = $this->Target_model->detail_target($this->post('id_target'))->normal_expense;
+			$offset = $this->Target_model->detail_target($this->post('id_target'))->offset;
 			$targetData = $this->User_model->detail_user($this->post('username'));
 			$data = [];
 			$save = 0;
@@ -31,6 +34,8 @@ class Services extends REST_Controller
 			$save = floor($targetData->penghasilan/30) - $expense;
 			$data['save'] = $save;
 			$data['expense'] = $expense;
+			$offset = $offset+($normalExpense - $expense);
+			$this->Target_model->update_offset_target($this->post('id_target'),$offset);
 			$inp = file_get_contents(base_url().'json/history.json');
 			$tempArray = json_decode($inp);
 			array_push($tempArray, $data);
@@ -46,8 +51,11 @@ class Services extends REST_Controller
 		}
 	}
 
-	public function updateHistoryDailyAmount_post()
+	public function updateHistoryDaily_post()
 	{
+		$this->load->model('Target_model');
+		$normalExpense = $this->Target_model->detail_target($this->post('id_target'))->normal_expense;
+		$offset = $this->Target_model->detail_target($this->post('id_target'))->offset;
 		$amountKeys = [];
 		$keys = [];
 		foreach($this->post() as $key => $value)
@@ -74,6 +82,7 @@ class Services extends REST_Controller
 		{
 			if ($temp->username == $this->post('username') && $temp->id_target == $this->post('id_target') && $temp->date == $this->post('date'))
 			{
+				$tempExpense = $temp->expense;
 				foreach($amountKeys as $amountKey)
 				{
 					$tempKey = substr($amountKey['key'],7);
@@ -82,6 +91,9 @@ class Services extends REST_Controller
 					$temp->save = $temp->save + $diff;
 					$temp->expense = $temp->expense - $diff;
 				}
+				$endExpense = $tempExpense - $temp->expense;
+				$offset = $offset+$endExpense;
+				$this->Target_model->update_offset_target($this->post('id_target'),$offset);
 				foreach($keys as $k)
 				{
 						if($k['value'] != $k['key'])
@@ -102,8 +114,11 @@ class Services extends REST_Controller
 		]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
 	}
 
-	public function updateHistoryDaily_post()
+	public function updateHistoryDailyAmount_post()
 	{
+		$this->load->model('Target_model');
+		$normalExpense = $this->Target_model->detail_target($this->post('id_target'))->normal_expense;
+		$offset = $this->Target_model->detail_target($this->post('id_target'))->offset;
 		foreach($this->post() as $key => $value)
 		{
 			if($key != 'username' && $key != 'id_target' && $key != 'date')
@@ -126,7 +141,9 @@ class Services extends REST_Controller
 					}
 				}
 				$temp->save = $temp->save + $diff;
+				$offset = $offset+$diff;
 				$temp->expense = $temp->expense - $diff;
+				$this->Target_model->update_offset_target($this->post('id_target'),$offset);
 			}
 		}
 		$jsonData = json_encode($tempArray);
@@ -138,7 +155,9 @@ class Services extends REST_Controller
 	}
 
 	public function deleteHistoryDaily_post() {
-
+		$this->load->model('Target_model');
+		$normalExpense = $this->Target_model->detail_target($this->post('id_target'))->normal_expense;
+		$offset = $this->Target_model->detail_target($this->post('id_target'))->offset;
 		foreach($this->post() as $key => $value)
 		{
 			if($key != 'username' && $key != 'id_target' && $key != 'date')
@@ -163,14 +182,20 @@ class Services extends REST_Controller
 						$tempArray[$i] = $temp;
 					}
 				}
-				$temp['save'] = $temp['save'] + $diff;
-				$temp['expense'] = $temp['expense'] - $diff;
+				$tempArray[$i]['save'] = $tempArray[$i]['save'] + $diff;
+				$offset = $offset+$diff;
+				$this->Target_model->update_offset_target($this->post('id_target'),$offset);
+				$tempArray[$i]['expense'] = $tempArray[$i]['expense'] - $diff;
 			}
 			$i=$i+1;
 		}
 //		var_dump($temp);
 		$jsonData = json_encode($tempArray);
-//		var_dump($jsonData);
+		file_put_contents('././json/history.json', $jsonData);
+		$this->response([[
+				'status' => TRUE,
+				'message' => 'Pengeluaran Daily updated'
+		]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
 	}
 
 	public function getHistoryDaily_get() {
@@ -179,15 +204,12 @@ class Services extends REST_Controller
 		$tempArray = json_decode($inp);
 		foreach($tempArray as $temp)
 		{
-			if ($temp->username == $this->get('username'))
+			if ($temp->username == $this->get('username') && $temp->id_target == $this->get('id_target'))
 			{
 				$response = array_push($response, $temp);
 			}
 		}
-		$this->response([[
-			'status' => TRUE,
-			'message' => 'Pengeluaran Daily updated'
-		]], REST_Controller::HTTP_OK);
+		$this->response($response, REST_Controller::HTTP_OK);
 	}
 
 	public function login_post()
@@ -269,7 +291,7 @@ class Services extends REST_Controller
 	            {
 	                $this->response([[
 	                    'status' => FALSE,
-	                    'message' => 'Wrong username or password'
+	                    'message' => 'Pengeluaran failed'
 	                    ]]);
 	            }
 	    }
