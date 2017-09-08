@@ -48,6 +48,7 @@ class Test extends CI_Controller
 
   public function json()
   {
+  	asdf
     $inp = file_get_contents(base_url().'/json/history.json');
     echo $inp;
   }
