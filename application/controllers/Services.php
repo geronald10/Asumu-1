@@ -12,6 +12,30 @@ class Services extends REST_Controller
 		$this->load->helper('url_helper');
 	}
 
+	public function newHistoryDaily_post()
+	{
+		if($this->post())
+		{
+			$data = [];
+			foreach($this->post() as $key => $value) {
+				$data[$key] = $value;
+			}
+			$inp = file_get_contents(base_url().'json/history.json');
+			$tempArray = json_decode($inp);
+			array_push($tempArray, $data);
+			$jsonData = json_encode($tempArray);
+			file_put_contents('././json/history.json', $jsonData);
+			$this->response([[
+					'status' => TRUE,
+					'message' => 'Pengeluaran Daily added'
+			]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
+		}
+		else {
+			$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+		}
+
+	}
+
 	public function login_post()
 	{
 		$this->load->model('User_model');
