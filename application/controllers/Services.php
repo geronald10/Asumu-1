@@ -87,7 +87,9 @@ class Services extends REST_Controller
 			{
 				$this->response([[
 					'status' => TRUE,
-					'message' => 'Login succeeded'
+					'message' => 'Login succeeded',
+					'username' => $user['username'],
+					'nama_user' => $user['nama_user']
 					]], REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
 				}
 				else
@@ -124,6 +126,14 @@ class Services extends REST_Controller
 					$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
 				}
 
+			}
+
+			public function historyTarget_get() {
+				$this->load->model('HistoryTarget_model');
+				$username = $this->get('username');
+				$response = $this->HistoryTarget_model->getHistoryTarget($username);
+				var_dump($response);
+				$this->response($response, REST_Controller::HTTP_OK);
 			}
 
 	    public function newPengeluaran_post() {
