@@ -55,7 +55,7 @@ class Services extends REST_Controller
 	    	$this->load->model('Pengeluaran_model');
 	    	$username = $this->get('username');
 			$responses = $this->Pengeluaran_model->getPengeluaranDefault($username);
-
+			$this->response($responses, REST_Controller::HTTP_OK);
 		}
 	    public function newPengeluaran_post() {
 	        $this->load->model('Pengeluaran_model');
