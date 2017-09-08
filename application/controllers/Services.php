@@ -16,6 +16,8 @@ class Services extends REST_Controller
 	{
 		if($this->post())
 		{
+			$this->load->model('User_model');
+			$targetData = $this->User_model->detail_user($this->post('username'));
 			$data = [];
 			$save = 0;
 			$expense = 0;
@@ -26,6 +28,9 @@ class Services extends REST_Controller
 					$expense += intval($value);
 				}
 			}
+			$save = floor($targetData->penghasilan/30) - $expense;
+			$data['save'] = $save;
+			$data['expense'] = $expense;
 			$inp = file_get_contents(base_url().'json/history.json');
 			$tempArray = json_decode($inp);
 			array_push($tempArray, $data);
@@ -45,7 +50,7 @@ class Services extends REST_Controller
 	{
 		foreach($this->post() as $key => $value)
 		{
-			if($key != 'username' && $key != 'id_target' && $key != 'date' && $key != 'amount')
+			if($key != 'username' && $key != 'id_target' && $key != 'date')
 			{
 				$field = $key;
 			}
@@ -60,9 +65,12 @@ class Services extends REST_Controller
 				{
 					if($key == $field)
 					{
-						$temp->field = $this->post('amount');
+						$diff = $temp->$field - $this->post($field);
+						$temp->$field = $this->post($field);
 					}
 				}
+				$temp->save = $temp->save + $diff;
+				$temp->expense = $temp->expense - $diff;
 			}
 		}
 		$jsonData = json_encode($tempArray);
@@ -82,14 +90,13 @@ class Services extends REST_Controller
 		if($username != NULL && $password != NULL)
 		{
 			$user = $this->User_model->login($username, md5($password));
-
 			if($user)
 			{
 				$this->response([[
 					'status' => TRUE,
 					'message' => 'Login succeeded',
-					'username' => $user['username'],
-					'nama_user' => $user['nama_user']
+					'username' => $user->username,
+					'nama_user' => $user->nama_user
 					]], REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
 				}
 				else

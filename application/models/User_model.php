@@ -10,7 +10,7 @@ class User_model extends CI_Model {
     {
       $this->db->where('username',$username);
       $this->db->where('password',$password);
-      return $this->db->get($this->table)->result();
+      return $this->db->get($this->table)->row();
     }
 
 

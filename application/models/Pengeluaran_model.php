@@ -6,12 +6,6 @@ class Pengeluaran_model extends CI_Model {
         $this->load->database('default');
     }
 
-    public function login($username,$password)
-    {
-      $this->db->where('username',$username);
-      $this->db->where('password',$password);
-      return $this->db->get($this->table)->result();
-    }
 
     public function newPengeluaranDefault($username, $desc, $amount) {
       $args = array('username'=>$username, 'pengeluaran_desc'=>$desc, 'pengeluaran_amount'=>$amount);
