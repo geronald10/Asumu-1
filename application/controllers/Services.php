@@ -81,6 +81,42 @@ class Services extends REST_Controller
 		]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
 	}
 
+	public function deleteHistoryDaily_post() {
+
+		foreach($this->post() as $key => $value)
+		{
+			if($key != 'username' && $key != 'id_target' && $key != 'date')
+			{
+				$field = $key;
+			}
+		}
+		$inp = file_get_contents(base_url().'json/history.json');
+		$tempArray = json_decode($inp, true);
+		$i = 0;
+		foreach($tempArray as $temp)
+		{
+			if ($temp['username'] == $this->post('username') && $temp['id_target'] == $this->post('id_target') && $temp['date'] == $this->post('date'))
+			{
+				foreach($temp as $key => $value)
+				{
+					if($key == $field)
+					{
+
+						$diff = $temp[$field];
+						unset($temp[$field]);
+						$tempArray[$i] = $temp;
+					}
+				}
+				$temp['save'] = $temp['save'] + $diff;
+				$temp['expense'] = $temp['expense'] - $diff;
+			}
+			$i=$i+1;
+		}
+//		var_dump($temp);
+		$jsonData = json_encode($tempArray);
+//		var_dump($jsonData);
+	}
+
 	public function login_post()
 	{
 		$this->load->model('User_model');
