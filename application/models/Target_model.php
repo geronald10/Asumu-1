@@ -19,6 +19,12 @@ class Target_model extends CI_Model {
       return $this->db->update($this->table,$args);
     }
 
+    public function update_status_target($id,$args)
+    {
+      $this->db->where('id_target',$id);
+      return $this->db->update($this->table,$args);
+    }
+
     public function update_targetUser($username, $post)
     {
       $this->db->where('username',$username);

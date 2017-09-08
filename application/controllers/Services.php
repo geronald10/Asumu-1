@@ -48,6 +48,62 @@ class Services extends REST_Controller
 
 	public function updateHistoryDailyAmount_post()
 	{
+		$amountKeys = [];
+		$keys = [];
+		foreach($this->post() as $key => $value)
+		{
+			if(substr($key,0,7) == 'amount_')
+			{
+				$datum = [];
+				$datum['key'] = $key;
+				$datum['value'] = $value;
+				array_push($amountKeys,$datum);
+			}
+			else if($key != 'username' && $key != 'id_target' && $key != 'date'){
+				$datum = [];
+				$datum['key'] = $key;
+				$datum['value'] = $value;
+				array_push($keys,$datum);
+			}
+
+		}
+		$inp = file_get_contents(base_url().'json/history.json');
+		$tempArray = json_decode($inp);
+		$i = 0;
+		foreach($tempArray as $temp)
+		{
+			if ($temp->username == $this->post('username') && $temp->id_target == $this->post('id_target') && $temp->date == $this->post('date'))
+			{
+				foreach($amountKeys as $amountKey)
+				{
+					$tempKey = substr($amountKey['key'],7);
+					$diff = $temp->$tempKey - $amountKey['value'];
+					$temp->$tempKey = $amountKey['value'];
+					$temp->save = $temp->save + $diff;
+					$temp->expense = $temp->expense - $diff;
+				}
+				foreach($keys as $k)
+				{
+						if($k['value'] != $k['key'])
+						{
+							$tempArray[$i]->$k['value'] = $tempArray[$i]->$k['key'];
+							unset($tempArray[$i]->$k['key']);
+						}
+				}
+
+			}
+			$i = $i+1;
+		}
+		$jsonData = json_encode($tempArray);
+		file_put_contents('././json/history.json', $jsonData);
+		$this->response([[
+				'status' => TRUE,
+				'message' => 'Pengeluaran Daily updated'
+		]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
+	}
+
+	public function updateHistoryDaily_post()
+	{
 		foreach($this->post() as $key => $value)
 		{
 			if($key != 'username' && $key != 'id_target' && $key != 'date')
@@ -139,7 +195,6 @@ class Services extends REST_Controller
 				$this->load->model('HistoryTarget_model');
 				$username = $this->get('username');
 				$response = $this->HistoryTarget_model->getHistoryTarget($username);
-				var_dump($response);
 				$this->response($response, REST_Controller::HTTP_OK);
 			}
 
@@ -314,6 +369,27 @@ class Services extends REST_Controller
 
 		}
 
+		public function updateStatusTarget_post()
+		{
+			$this->load->model('Target_model');
+			$id = $this->post('id_target');
+			if($id != NULL)
+			{
+				$args = array(
+					'status' => 0,
+				);
+				$idTarget = $this->Target_model->update_status_target($id, $args);
+				$this->response([[
+													 'status' => TRUE,
+													 'message' => 'Target updated'
+											 ]], REST_Controller::HTTP_OK);
+			}
+			else {
+				$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+			}
+
+		}
+
 		public function deleteTarget_post()
 		{
 			$this->load->model('Target_model');
@@ -379,5 +455,6 @@ class Services extends REST_Controller
 				$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
 			}
 		}
+
 
 }
