@@ -50,7 +50,9 @@ class Services extends REST_Controller
 			{
 				$this->response([[
 					'status' => TRUE,
-					'message' => 'Login succeeded'
+					'message' => 'Login succeeded',
+					'username' => $user['username'],
+					'nama_user' => $user['nama_user']
 					]], REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
 				}
 				else
