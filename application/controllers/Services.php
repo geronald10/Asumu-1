@@ -43,90 +43,89 @@ class Services extends REST_Controller
 				}
 			}
 
-<<<<<<< HEAD
-        public function penghasilan_get(){
-        $this->load->model('User_model');
-        $username = $this->post('username');
-        $penghasilan = $this->post('penghasilan');
-        $responses = $this->User_model->updatePenghasilan($username, $penghasilan);   
-            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);    
-        }
+			public function penghasilan_post(){
+	        $this->load->model('User_model');
+	        $username = $this->post('username');
+	        $penghasilan = $this->post('penghasilan');
+	        $responses = $this->User_model->updatePenghasilan($username, $penghasilan);
+	        $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+	    }
 
-	// public function outlet_get()
-	// {
-	// 	$id = $this->get('id');
- //        $lat = $this->get('lat');
- //        $lon = $this->get('lon');
+			public function pengeluaran_get() {
+	    	$this->load->model('Pengeluaran_model');
+	    	$username = $this->get('username');
+			$responses = $this->Pengeluaran_model->getPengeluaranDefault($username);
 
-	// 	if($id === NULL)
- //        {
- //            if($lat != NULL && $lon != NULL)
- //            {
- //                $outlets = $this->Services_model->getOutlet(0, $lat, $lon);
- //            }
- //            else
- //            {
- //                $outlets = $this->Services_model->getOutlet();
- //            }
+		}
+	    public function newPengeluaran_post() {
+	        $this->load->model('Pengeluaran_model');
+	        $username = $this->post('username');
+	        $desc = $this->post('description');
+	        $amount = $this->post('amount');
+	        $response = $this->Pengeluaran_model->newPengeluaranDefault($username, $desc, $amount);
 
-	// 		if($outlets)
-	// 		{
- //                // $this->output->set_content_type('application/json');
- //                // $this->output->set_output(json_encode($outlets, 16));
- //                // return $this->output;
-	// 			$this->response($outlets, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-	// 		}
-	// 		else
- //            {
- //                $this->response([[
- //                    'status' => FALSE,
- //                    'message' => 'No outlets were found'
- //                ]]);
- //            }
-	// 	}
+	        if($response)
+	            {
+	                $this->response([[
+	                    'status' => TRUE,
+	                    'message' => 'Pengeluaran added'
+	                ]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
+	            }
+	            else
+	            {
+	                $this->response([[
+	                    'status' => FALSE,
+	                    'message' => 'Wrong username or password'
+	                    ]]);
+	            }
+	    }
 
-	// 	$id = (int) $id;
+			public function updatePengeluaran_post() {
+		$this->load->model('Pengeluaran_model');
+		$username = $this->post('username');
+		$desc = $this->post('description');
+		$amount = $this->post('amount');
+		$response = $this->Pengeluaran_model->updatePengeluaranDefault($username, $desc, $amount);
 
- //        // Validate the id.
- //        if ($id <= 0)
- //        {
- //            // Invalid id, set the response and exit.
- //            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
- //        }
- //        else
- //        {
- //        	$outlet = $this->Services_model->getOutlet($id);
+		if($response)
+		{
+			$this->response([[
+				'status' => TRUE,
+				'message' => 'Pengeluaran modified'
+			]], REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+		}
+		else
+		{
+			$this->response([[
+				'status' => FALSE,
+				'message' => 'Wrong username or password'
+			]]);
+		}
+	}
 
- //        	if($outlet)
-	// 		{
-	// 			$this->response($outlet, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-	// 		}
-	// 		else
- //            {
- //                $this->response([[
- //                    'status' => FALSE,
- //                    'message' => 'The specified outlet were not found'
- //                ]], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
- //            }
- //        }
+	public function deletePengeluaran_post() {
+		$this->load->model('Pengeluaran_model');
+		$username = $this->post('username');
+		$desc = $this->post('description');
+		$response = $this->Pengeluaran_model->deletePengeluaranDefault($username, $desc);
 
-	// }
+		if($response)
+		{
+			$this->response([[
+				'status' => TRUE,
+				'message' => 'Pengeluaran deleted'
+			]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
+		}
+		else
+		{
+			$this->response([[
+				'status' => FALSE,
+				'message' => 'Wrong username or password'
+			]]);
+		}
+	}
 
- //    public function SN_post()
- //    {
- //        $IDCR = $this->post('CR');
- //        $SN = $this->post('SN');
- //        $IDOutlet = $this->post('outlet');
 
- //        if($IDCR != NULL && $SN != NULL && $IDOutlet != NULL){
- //            $data = array(
- //                'IDCR' => $IDCR,
- //                'SN' => $SN,
- //                'IDOutlet' => $IDOutlet
- //            );
-
- //            $result = $this->Services_model->postSN($data);
-=======
 		public function register_post()
 		{
 			$this->load->model('User_model');
@@ -157,7 +156,6 @@ class Services extends REST_Controller
 			else {
 				$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
 			}
->>>>>>> 2487d08bfba194e7946d119e7c9197eb246e8f7f
 
 		}
 
