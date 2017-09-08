@@ -48,6 +48,8 @@ class Test extends CI_Controller
 
   public function json()
   {
+    ini petrus
+    petrus ga bisa pake git
     $inp = file_get_contents(base_url().'/json/history.json');
     echo $inp;
   }
