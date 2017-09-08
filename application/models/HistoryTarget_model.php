@@ -18,8 +18,11 @@ class HistoryTarget_model extends CI_Model {
     }
 
     public function getHistoryTarget($username) {
-    	$this->db->where('username', $username);
-    	return $this->db->get($this->table)->result();
+    	$this->db->from("$this->table ht");
+    	$this->db->join('target t', 'ht.id_target = t.id_target');
+    	$this->db->join('user u', 'ht.username = u.username');
+    	$this->db->where('ht.username', $username);
+    	return $this->db->get()->result();
 	}
 
 }

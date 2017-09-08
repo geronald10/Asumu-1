@@ -93,6 +93,7 @@ class Services extends REST_Controller
 				$this->load->model('HistoryTarget_model');
 				$username = $this->get('username');
 				$response = $this->HistoryTarget_model->getHistoryTarget($username);
+				var_dump($response);
 				$this->response($response, REST_Controller::HTTP_OK);
 			}
 
