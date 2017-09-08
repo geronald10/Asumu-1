@@ -117,6 +117,23 @@ class Services extends REST_Controller
 //		var_dump($jsonData);
 	}
 
+	public function getHistoryDaily_get() {
+		$response = array();
+		$inp = file_get_contents(base_url().'json/history.json');
+		$tempArray = json_decode($inp);
+		foreach($tempArray as $temp)
+		{
+			if ($temp->username == $this->get('username'))
+			{
+				$response = array_push($response, $temp);
+			}
+		}
+		$this->response([[
+			'status' => TRUE,
+			'message' => 'Pengeluaran Daily updated'
+		]], REST_Controller::HTTP_OK);
+	}
+
 	public function login_post()
 	{
 		$this->load->model('User_model');
