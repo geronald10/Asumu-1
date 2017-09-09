@@ -22,7 +22,7 @@ class Test extends CI_Controller
   echo $date;
   echo '<br>';
   $parameter['_ts'] = $date;
-
+  $parameter['fields'] = 'id,name,no';
   // Urutkan berdasarkan nama
   ksort($parameter);
 
@@ -36,7 +36,7 @@ class Test extends CI_Controller
   }
 
   // Lakukan HMACSHA256
-  $signatureSecretKey = "268a1a7fbd0002ccf353d336982a11fe";
+  $signatureSecretKey = "6082770fa202719f13cc13a90935dde3";
   echo $data;
   echo '<br>';
   $hash = hash_hmac('sha256', $data, $signatureSecretKey, true );
