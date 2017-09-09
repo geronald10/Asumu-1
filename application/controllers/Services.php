@@ -51,6 +51,45 @@ class Services extends REST_Controller
 		}
 	}
 
+	public function newHistoryDailyV1_post()
+	{
+		if($this->post())
+		{
+			$this->load->model('User_model');
+			$this->load->model('Target_model');
+			$normalExpense = $this->Target_model->detail_target($this->post('id_target'))->normal_expense;
+			$offset = $this->Target_model->detail_target($this->post('id_target'))->offset;
+			$targetData = $this->User_model->detail_user($this->post('username'));
+			$data = [];
+			$save = 0;
+			$expense = 0;
+			foreach($this->post() as $key => $value) {
+				$data[$key] = $value;
+				if($key != 'username' && $key != 'id_target' && $key != 'date')
+				{
+					$expense += intval($value);
+				}
+			}
+			$save = floor($targetData->penghasilan/30) - $expense;
+			$data['save'] = $save;
+			$data['expense'] = $expense;
+			$offset = $offset+($normalExpense - $expense);
+			$this->Target_model->update_offset_target($this->post('id_target'),$offset);
+			$inp = file_get_contents(base_url().'json/history.json');
+			$tempArray = json_decode($inp);
+			array_push($tempArray, $data);
+			$jsonData = json_encode($tempArray);
+			file_put_contents('././json/history.json', $jsonData);
+			$this->response([[
+					'status' => TRUE,
+					'message' => 'Pengeluaran Daily added'
+			]], REST_Controller::HTTP_CREATED); // OK (200) being the HTTP response code
+		}
+		else {
+			$this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+		}
+	}
+
 	public function updateHistoryDaily_post()
 	{
 		$this->load->model('Target_model');
